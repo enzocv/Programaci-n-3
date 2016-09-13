@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import static pkg_Ejercicio1.frmOperacionesAritmeticas.grid;
+import org.omg.CORBA.portable.InputStream;
 import pkg_Ejercicio2.clsFiesta;
 
 public class frmFiesta extends javax.swing.JFrame {
@@ -46,12 +45,18 @@ public class frmFiesta extends javax.swing.JFrame {
         btnagregar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
 
         jLabel1.setText("FIESTA");
 
         jLabel3.setText("Edad:");
 
         txtedad.setBackground(new java.awt.Color(204, 255, 204));
+        txtedad.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtedadKeyTyped(evt);
+            }
+        });
 
         rbtnH.setText("Hombre");
 
@@ -184,9 +189,16 @@ public class frmFiesta extends javax.swing.JFrame {
 
     private void btnagregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregarActionPerformed
         String sexo = "";
-        int edad = Integer.parseInt(txtedad.getText());
-        
-        if (edad >= 18) {
+        int edad = 0;
+        //VALIDACION DE CAJA DE TEXTO EDAD
+        if (!txtedad.getText().equals("")) {
+            edad = Integer.parseInt(txtedad.getText());
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Campo de Edad vacio.");
+        }
+        if (edad >= 18 && (rbtnH.isSelected() || rbtnM.isSelected())) {
+            
             if (rbtnH.isSelected()) {
             sexo = "Hombre";
             }
@@ -208,11 +220,23 @@ public class frmFiesta extends javax.swing.JFrame {
             objfiesta.insertarDatos(id, edad, sexo);
         }
         else{
-            JOptionPane.showMessageDialog(null, "No se permite el ingreso a menores de edad.");
+            JOptionPane.showMessageDialog(null, "No se permite el ingreso a menores de edad, o faltan ingresar datos");
             txtedad.setEnabled(false);
             btnagregar.setEnabled(false);
         }
     }//GEN-LAST:event_btnagregarActionPerformed
+
+    private void txtedadKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtedadKeyTyped
+        //VALIDAR LOS CAMPOS DE TEXTO PARA SOLO PORDER INGRSAR NUMEROS
+        char numero = evt.getKeyChar();
+        
+        if (Character.isLetter(numero)) {
+            getToolkit().beep();
+            evt.consume();
+            
+            JOptionPane.showMessageDialog(null, "!Ingrese solo NUMEROS¡");
+        }
+    }//GEN-LAST:event_txtedadKeyTyped
     
     //LISTAR EL FICHERO PARA OBTENER TODOS LOS DATOS
     private List<String> listaFichero(){

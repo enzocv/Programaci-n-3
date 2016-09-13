@@ -6,3 +6,5 @@
 6	50	Hombre
 7	18	Hombre
 8	18	Hombre
+9	18	Mujer
+10	19	Mujer
