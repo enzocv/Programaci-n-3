@@ -1,0 +1,17 @@
+commit 26d499c44d78a891cfaf13d7c6ddb189ee9244f2
+Author: drei109 <drei.rar@gmail.com>
+Date:   Mon Sep 12 18:12:24 2016 -0500
+
+    Merge
+
+commit ebe592806b25208fab7384a6adf4ee270494eda6
+Author: drei109 <drei.rar@gmail.com>
+Date:   Mon Sep 12 13:29:41 2016 -0500
+
+    features added , validation still needed
+
+commit b61c78ac500149037a6638a700ba92e402cb4270
+Author: Enzo <enzocv96@gmail.com>
+Date:   Sun Sep 11 11:27:34 2016 -0500
+
+    firts commit
