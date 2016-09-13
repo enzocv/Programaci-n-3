@@ -1,0 +1,8 @@
+1	20	Hombre
+2	20	Mujer
+3	21	Hombre
+4	21	Mujer
+5	20	Hombre
+6	50	Hombre
+7	18	Hombre
+8	18	Hombre

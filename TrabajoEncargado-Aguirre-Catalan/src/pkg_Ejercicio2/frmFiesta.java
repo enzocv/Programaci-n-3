@@ -1,15 +1,20 @@
 
 package pkg_Ejercicio2;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import static pkg_Ejercicio1.frmOperacionesAritmeticas.grid;
 import pkg_Ejercicio2.clsFiesta;
 
 public class frmFiesta extends javax.swing.JFrame {
 
     clsFiesta objfiesta = new clsFiesta();
-    int contador = 0;
-    String resultado = "";
-    String x[][] = null;
+    int menor = 0;
     
     public frmFiesta() {
         initComponents();
@@ -161,42 +166,149 @@ public class frmFiesta extends javax.swing.JFrame {
 
     private void btncalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncalcularActionPerformed
         
-        //PERSONAS QUE ASISTIERON A LA FIESTA
-        int total = objfiesta.npersonasAsistentes();
+        int personasasistentes = personasAsistentes();
+        int nHombres = cantidadHombres();
+        int nMujeres = cantidadMujeres();
+        double promEdadSexo[] = promedioEdadSexo();
+        int edadMenor = edadMenor();
         
-        //CANTIDAD DE HOMBRES Y DE MUJERES
-        objfiesta.cantidadHombresMujeres();
+        String resultado = "Asistentes: " + personasasistentes + 
+                           "\nCantidad de Hombres: " + nHombres +
+                            "\nCantidad de Mujeres: " + nMujeres +
+                            "\nPromedio Edades Hombres: " + promEdadSexo[0] +
+                            "\nPromedio Edades Mujeres: " + promEdadSexo[1] + 
+                            "\nEdad del la persona más joven: " + edadMenor;
         
-        //PROMEDIO DE EDADES POR SEXO
-        objfiesta.promEdades();
-        
-        //RESULTADO
-        resultado = "Total de Personas: " + total +"\nCantidad de Hombres: "+ objfiesta.nHombres+
-                    "\nCantidad de Mujeres: " + objfiesta.nMujeres+
-                    "\nPromedio Edades por Sexo: Hombres" + objfiesta.promEdadHombres + "\tMujeres: " + 
-                                                                                            objfiesta.promEdadMujeres+
-                    "\nEdad de la persona más Joven: "+ objfiesta.edadMasJoven;
         txtresultado.setText(resultado);
-        
     }//GEN-LAST:event_btncalcularActionPerformed
 
     private void btnagregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnagregarActionPerformed
         String sexo = "";
-        
-        if (rbtnH.isSelected()) {
-            sexo = "Hombre";
-        }
-        else if (rbtnM.isSelected()) {
-            sexo = "Mujer";
-        }
         int edad = Integer.parseInt(txtedad.getText());
         
-        
-        objfiesta.guardarDatosEnArray(edad,sexo, contador);
-        contador++;
-        
-    }//GEN-LAST:event_btnagregarActionPerformed
+        if (edad >= 18) {
+            if (rbtnH.isSelected()) {
+            sexo = "Hombre";
+            }
+            else if (rbtnM.isSelected()) {
+                sexo = "Mujer";
+            }
 
+
+            //CREACION DEL FICHERO
+            objfiesta.crearFichero();
+
+            //OBTENER EL ÚLTIMO ID
+            List<String> list = listaFichero();
+            int id = 1;
+            if (list.size()>=3) {
+                id = Integer.parseInt(list.get(list.size()-3)) + 1;
+            }
+            
+            objfiesta.insertarDatos(id, edad, sexo);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "No se permite el ingreso a menores de edad.");
+            txtedad.setEnabled(false);
+            btnagregar.setEnabled(false);
+        }
+    }//GEN-LAST:event_btnagregarActionPerformed
+    
+    //LISTAR EL FICHERO PARA OBTENER TODOS LOS DATOS
+    private List<String> listaFichero(){
+        File archivo = new File("fiesta.txt");
+        List<String> list = new ArrayList<>();
+        try (Scanner scanner = new Scanner(archivo);) {
+            scanner.useDelimiter("\t|\n");
+            while (scanner.hasNextLine()) {
+                list.add(scanner.next());
+            }
+        } catch (Exception e) {
+        }    
+        return list;
+    }
+    
+    //NUMERO TOTAL DE PERSONAS EN LA FIESTA
+    public int personasAsistentes(){
+        List<String> list = listaFichero();
+        int id = 1;
+        if (list.size()>=3) {
+            id = Integer.parseInt(list.get(list.size()-3)) + 1;
+        }
+        return id;
+    }
+    
+    //SUMA DE TODAS LAS EDADES 
+    public int sumaTotalEdades(){
+        List<String> list = listaFichero();
+        int totalEdades = 0;
+        
+        for (int i = 0; i < list.size(); i+=3) {
+            totalEdades += Integer.parseInt(list.get(i+1));
+        }
+        return totalEdades;
+    }
+    
+    //TOTAL DE MUJERES Y HOMBRES EN LA FIESTA
+    private int cantidadHombres() {
+        List<String> list = listaFichero();
+        int hombres = 0;
+        
+        for (int i = 0; i < list.size(); i+=3) {
+            if (list.get(i+2).trim().equals("Hombre")) {
+                hombres+=1;
+            }
+        }
+        return hombres;
+    }
+    
+    private int cantidadMujeres() {
+        List<String> list = listaFichero();
+        int mujeres = 0;
+        
+        for (int i = 0; i < list.size(); i+=3) {
+            if (list.get(i+2).trim().equals("Mujer")) {
+                mujeres+=1;
+            }
+        }
+        return mujeres;
+    }
+    
+    //PROMEDIO DE EDADES POR SEXO
+    public double[] promedioEdadSexo(){
+        List<String> list = listaFichero();
+        double promH = 0;
+        double promM = 0;
+        int total = sumaTotalEdades();
+        int tHombres = cantidadHombres();
+        int tMujeres = cantidadMujeres();
+        
+        for (int i = 0; i < list.size(); i+=3) {
+            
+            if (list.get(i+2).trim().equals("Hombre")) {
+                promH = total / tHombres;
+            }
+            else{
+                promM = total / tMujeres; 
+            }
+        }
+        
+        return new double[]{promH, promM};
+    }
+    
+    //CALCULAR LA EDAD MENOR DENTRO DE LAS PERSONAS EN LA FIESTA
+    public int edadMenor(){
+        List<String> list = listaFichero();
+        int menor = Integer.parseInt(list.get(1));
+        for (int i = 0; i < list.size(); i+=3) {
+            if ( menor > Integer.parseInt(list.get(i+1)) ) {
+                menor = Integer.parseInt(list.get(i+1));
+            }
+        }
+        
+        return menor;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -247,4 +359,6 @@ public class frmFiesta extends javax.swing.JFrame {
     private javax.swing.JTextField txtedad;
     private javax.swing.JTextArea txtresultado;
     // End of variables declaration//GEN-END:variables
+
+    
 }
