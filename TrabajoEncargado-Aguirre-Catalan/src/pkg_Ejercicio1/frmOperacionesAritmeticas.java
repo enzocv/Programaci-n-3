@@ -273,18 +273,11 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
         }
         
         //EVALUACION PARA VALIDAR LA DIVISIÓN
-        if (!cmboperaciones.getSelectedItem().equals("División")) {
-            objoperaciones.obtenerResultado(cmboperaciones.getSelectedItem().toString(),
-                                            Double.parseDouble(txta.getText()), 
-                                            Double.parseDouble(txtb.getText()));
-            
-            objoperaciones.insertarDatos(id,Double.parseDouble(txta.getText()),
-                                         Double.parseDouble(txtb.getText()),
-                                         cmboperaciones.getSelectedItem().toString(), 
-                                         objoperaciones.resultado);
+        if (cmboperaciones.getSelectedItem().equals("División") && Double.parseDouble(txtb.getText()) == 0) {
+            JOptionPane.showMessageDialog(null, "La división entre 0 no es aceptada");
         }
         //SI ES DIVISIÓN SE EVALUA EL DATO QUE TENGA LA CAJA DE TEXTO B
-        else if (Double.parseDouble(txtb.getText()) != 0) {
+        else {
             objoperaciones.obtenerResultado(cmboperaciones.getSelectedItem().toString(),
                                             Double.parseDouble(txta.getText()), 
                                             Double.parseDouble(txtb.getText()));
@@ -294,8 +287,6 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
                                          cmboperaciones.getSelectedItem().toString(), 
                                          objoperaciones.resultado);
         }
-        else{JOptionPane
-                .showMessageDialog(null, "La división entre 0 no es aceptada");}
         
         Object[] filas = {id,txta.getText(),txtb.getText(),objoperaciones.operacion,objoperaciones.resultado};
         DefaultTableModel model = (DefaultTableModel) grid.getModel();
@@ -329,7 +320,6 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
             reader.close();
             inputFile.delete();
             boolean successful = tempFile.renameTo(inputFile);
-//            JOptionPane.showMessageDialog(null, successful);
             refrescarGrid();
             
         } catch (FileNotFoundException ex) {
