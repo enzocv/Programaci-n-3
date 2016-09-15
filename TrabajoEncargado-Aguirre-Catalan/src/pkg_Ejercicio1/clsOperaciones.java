@@ -10,7 +10,7 @@ public class clsOperaciones {
     //VARIABLES
     double a, b, resultado;
     String operacion = "";
-    
+    int id ;
     
     //ARCHIVO
     File ficheroOperaciones = new File("operaciones.txt");

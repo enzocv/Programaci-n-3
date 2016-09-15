@@ -521,7 +521,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
         });
     }
     
-    //MOSTRAR DATOS
+    /*//MOSTRAR DATOS
     void mostrarDatos(){
         if (objoperaciones.datosOperaciones.size() == 0) {
             objoperaciones.ficheroAObjeto(); //CARGAR DATOS
@@ -539,7 +539,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
             modelo.setValueAt(item.resultado, fila, 4);
             fila++;
         }
-    }
+    }*/
     
     void cargarGrid(){
         String data[][]={};
