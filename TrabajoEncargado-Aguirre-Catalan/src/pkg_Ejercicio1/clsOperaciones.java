@@ -2,7 +2,8 @@
 package pkg_Ejercicio1;
 //IMPORTACIONES DE LAS LIBRERIAS A UTILIZAR
 import java.io.*;
-import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 
@@ -27,6 +28,14 @@ public class clsOperaciones {
         this.resultado = resultado;
     }
     
+    // CONSTRUCTOR DE OPERACIÓN SIN SOLUCIÓN
+    public clsOperaciones(int id, double a, double b, String operacion){
+        this.id = id;
+        this.a = a;
+        this.b = b;
+        this.operacion = operacion;
+    }
+    
     //CREAR FICHERO
     public void crearFichero(){
         try {
@@ -35,7 +44,7 @@ public class clsOperaciones {
                 JOptionPane.showMessageDialog(null,"El Fichero fue creado correctamente");
             }
             else{
-                JOptionPane.showMessageDialog(null,"El Fichero ya existe");
+//                JOptionPane.showMessageDialog(null,"El Fichero ya existe");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(),"Error al crear Fichero", JOptionPane.INFORMATION_MESSAGE);
@@ -90,6 +99,91 @@ public class clsOperaciones {
         }
         
         return resultado;
+    }
+    
+    public void eliminarDatos(String idBorrar){
+        try {
+            // SE CREA UNA NUEVA FILA TEMPORAL DONDE SE ALMACENARÁN LAS LÍNEAS QUE NO SE ELIMINAN
+            File tempFile = new File("operaciones-temp.txt");
+            
+            // SE DECLARAN EL READER Y EL WRITER
+            BufferedReader reader = null;
+            BufferedWriter writer = null;
+            
+            // SE INSTANCIAN EL READER Y EL WRITER
+            reader = new BufferedReader(new FileReader(ficheroOperaciones));
+            writer = new BufferedWriter(new FileWriter(tempFile));
+            
+            // SE ASIGNA LA LÍNEA A BORRAR SEGÚN EL ID INDICADO
+            String lineaaBorrar = idBorrar +"\t";
+            String currentLine;
+            
+            while((currentLine = reader.readLine()) != null) {
+                String lineaCortada = currentLine.trim();
+                // SI LA LÍNEA EMPIEZA CON EL ID ESPECIFICADO, ENTONCES NO SE ELIMINA
+                if(lineaCortada.startsWith(lineaaBorrar)) continue;
+                writer.write(currentLine + System.getProperty("line.separator"));
+                
+            }
+            
+            // SE CIERRAN EL WRITER Y EL READER
+            writer.close();
+            reader.close();
+            
+            // EL ARCHIVO ORIGINAL SE ELIMINA
+            ficheroOperaciones.delete();
+            
+            // EL ARCHIVO TEMPORAL SE RENOMBRA COMO EL ORIGINAL
+            boolean successful = tempFile.renameTo(ficheroOperaciones);
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void actualizarDatos(){
+        try {
+            // SE CREA UNA NUEVA FILA TEMPORAL DONDE SE ALMACENARÁN LAS LÍNEAS QUE NO SE ACTUALIZAN
+            File tempFile = new File("operaciones-temp.txt");
+            
+            // SE DECLARAN EL READER Y EL WRITER
+            BufferedReader reader = null;
+            BufferedWriter writer = null;
+            
+            // SE INSTANCIAN EL READER Y EL WRITER
+            reader = new BufferedReader(new FileReader(ficheroOperaciones));
+            writer = new BufferedWriter(new FileWriter(tempFile));
+            
+            // SE ASIGNA LA LÍNEA A BORRAR SEGÚN EL ID INDICADO
+            String lineToRemove = id+"\t";
+            String currentLine;
+            
+            while((currentLine = reader.readLine()) != null) {
+                String trimmedLine = currentLine.trim();
+                // SI LA LÍNEA EMPIEZA CON EL ID ESPECIFICADO, ENTONCES SE INSERTA UNA NUEVA LÍNEA
+                if(trimmedLine.startsWith(lineToRemove)){
+                    writer.write(id+"\t"+
+                                 a+"\t"+
+                                 b+"\t"+
+                                 operacion+"\t"+
+                                 obtenerResultado(operacion,a,b)+
+                                 System.getProperty("line.separator"));
+                }
+                else{
+                    writer.write(currentLine + System.getProperty("line.separator"));
+                }                
+            }
+            writer.close();
+            reader.close();
+            ficheroOperaciones.delete();
+            boolean successful = tempFile.renameTo(ficheroOperaciones);            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

@@ -1,7 +1,6 @@
 2	30	23.0	Suma	53.0
 3	21123.0	2323.0	Multiplicacion	4.9068729E7
 4	200	20	Resta	180.0
-5	6003.0	1215.0	Resta	4788.0
 6	200	200	División	1.0
-7	3	3	División	1.0
-8	3.0	3.0	Suma	6.0
+8	123.0	12.0	Multiplicacion	1476.0
+10	23.0	11.0	Resta	12.0

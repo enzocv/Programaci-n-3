@@ -1,16 +1,11 @@
 package pkg_Ejercicio1;
 
 import java.io.*;
-import java.io.DataInput;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import pkg_Ejercicio1.clsOperaciones;
 
 public class frmOperacionesAritmeticas extends javax.swing.JFrame {
 
@@ -276,7 +271,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
         if (cmboperaciones.getSelectedItem().equals("División") && Double.parseDouble(txtb.getText()) == 0) {
             JOptionPane.showMessageDialog(null, "La división entre 0 no es aceptada");
         }
-        //SI ES DIVISIÓN SE EVALUA EL DATO QUE TENGA LA CAJA DE TEXTO B
+        //EN CASO DE NO SER UNA DIVISIÓN ENTRE CERO SE PROCEDE DE MANERA NAORMAL
         else {
             objoperaciones.obtenerResultado(cmboperaciones.getSelectedItem().toString(),
                                             Double.parseDouble(txta.getText()), 
@@ -286,51 +281,23 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
                                          Double.parseDouble(txtb.getText()),
                                          cmboperaciones.getSelectedItem().toString(), 
                                          objoperaciones.resultado);
+            Object[] filas = {id,txta.getText(),txtb.getText(),objoperaciones.operacion,objoperaciones.resultado};
+            DefaultTableModel model = (DefaultTableModel) grid.getModel();
+            model.addRow(filas);
         }
         
-        Object[] filas = {id,txta.getText(),txtb.getText(),objoperaciones.operacion,objoperaciones.resultado};
-        DefaultTableModel model = (DefaultTableModel) grid.getModel();
-        model.addRow(filas);  
+          
         
     }//GEN-LAST:event_btngrabarActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
-        try {
-            File inputFile = new File("operaciones.txt");
-            File tempFile = new File("operaciones-temp.txt");
-            
-            BufferedReader reader = null;
-            BufferedWriter writer = null;
-            
-            reader = new BufferedReader(new FileReader(inputFile));
-            writer = new BufferedWriter(new FileWriter(tempFile));
-            
-            
-            String lineToRemove = txtcodigo.getText()+"\t";
-            String currentLine;
-            
-            while((currentLine = reader.readLine()) != null) {
-                // trim newline when comparing with lineToRemove
-                String trimmedLine = currentLine.trim();
-                if(trimmedLine.startsWith(lineToRemove)) continue;
-                writer.write(currentLine + System.getProperty("line.separator"));
-                
-            }
-            writer.close();
-            reader.close();
-            inputFile.delete();
-            boolean successful = tempFile.renameTo(inputFile);
-            refrescarGrid();
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        objoperaciones.eliminarDatos(txtcodigo.getText());
+        refrescarGrid();
     }//GEN-LAST:event_btneliminarActionPerformed
     
     private List<String> listaFichero(){
-        File archivo = new File("operaciones.txt");
+        // CREA UNA LISTA CON TODOS LOS DATOS DEL FICHERO
+        File archivo = objoperaciones.ficheroOperaciones;
         List<String> list = new ArrayList<>();
         try (Scanner scanner = new Scanner(archivo);) {
             scanner.useDelimiter("\t|\n");
@@ -343,6 +310,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
     }
     
     private void btnleerTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnleerTodosActionPerformed
+        // REFRESCA EL JTABLE CON INFORMACIÓN NUEVA
         refrescarGrid();     
     }//GEN-LAST:event_btnleerTodosActionPerformed
 
@@ -381,47 +349,10 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
     }//GEN-LAST:event_btnleerPorCodigoActionPerformed
 
     private void btnactualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarActionPerformed
-            try {
-            File inputFile = new File("operaciones.txt");
-            File tempFile = new File("operaciones-temp.txt");
-            
-            BufferedReader reader = null;
-            BufferedWriter writer = null;
-            
-            reader = new BufferedReader(new FileReader(inputFile));
-            writer = new BufferedWriter(new FileWriter(tempFile));
-            
-            
-            String lineToRemove = txtcodigo.getText()+"\t";
-            String currentLine;
-            
-            while((currentLine = reader.readLine()) != null) {
-                // trim newline when comparing with lineToRemove
-                String trimmedLine = currentLine.trim();
-                if(trimmedLine.startsWith(lineToRemove)){
-                    writer.write(txtcodigo.getText()+"\t"+
-                                 txta.getText()+"\t"+
-                                 txtb.getText()+"\t"+
-                                 cmboperaciones.getSelectedItem()+"\t"+
-                                 objoperaciones.obtenerResultado(String.valueOf(cmboperaciones.getSelectedItem()),Double.parseDouble(txta.getText()),Double.parseDouble(txtb.getText()))+
-                                 System.getProperty("line.separator"));
-                }
-                else{
-                    writer.write(currentLine + System.getProperty("line.separator"));
-                }                
-            }
-            writer.close();
-            reader.close();
-            inputFile.delete();
-            boolean successful = tempFile.renameTo(inputFile);
-//            JOptionPane.showMessageDialog(null, successful);
-            refrescarGrid();
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        clsOperaciones nuevaOperacion;
+        nuevaOperacion = new clsOperaciones(Integer.parseInt(txtcodigo.getText()), Double.parseDouble(txta.getText()), Double.parseDouble(txtb.getText()), (String) cmboperaciones.getSelectedItem());
+        nuevaOperacion.actualizarDatos();
+        refrescarGrid();
     }//GEN-LAST:event_btnactualizarActionPerformed
 
     private void txtaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtaMouseClicked
@@ -430,6 +361,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
     }//GEN-LAST:event_txtaMouseClicked
 
     private void gridMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gridMouseClicked
+        // SE ASIGNAN LOS DATOS SELECCIONADOS DE LA TABLA A LOS TEXTBOX Y COMBOBOX
         int i = grid.getSelectedRow();
         txta.setText(modelo.getValueAt(i, 1).toString());
         txtb.setText(modelo.getValueAt(i, 2).toString());
@@ -457,7 +389,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
             getToolkit().beep();
             evt.consume();
             
-            JOptionPane.showMessageDialog(null, "!Ingrese solo NUMEROS¡");
+            JOptionPane.showMessageDialog(null, "¡Ingrese solo NÚMEROS!");
         }
     }//GEN-LAST:event_txtaKeyTyped
 
@@ -469,7 +401,7 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
             getToolkit().beep();
             evt.consume();
             
-            JOptionPane.showMessageDialog(null, "!Ingrese solo NUMEROS¡");
+            JOptionPane.showMessageDialog(null, "¡Ingrese solo NÚMEROS!");
         }
     }//GEN-LAST:event_txtbKeyTyped
 
@@ -481,14 +413,17 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
             getToolkit().beep();
             evt.consume();
             
-            JOptionPane.showMessageDialog(null, "!Ingrese solo NUMEROS¡");
+            JOptionPane.showMessageDialog(null, "¡Ingrese solo NÚMEROS!");
         }
     }//GEN-LAST:event_txtcodigoKeyTyped
 
+    void cargarGrid(){
+        String data[][]={};
+        String columnas[] = {"ID","Valor de A","Valor de B","Operacion","Resultado"};
+        modelo = new DefaultTableModel(data,columnas);
+        grid.setModel(modelo);
+    }
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -521,32 +456,23 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
         });
     }
     
-    /*//MOSTRAR DATOS
-    void mostrarDatos(){
-        if (objoperaciones.datosOperaciones.size() == 0) {
-            objoperaciones.ficheroAObjeto(); //CARGAR DATOS
-        }
+    private void refrescarGrid() {
+        //AGREGANDO LOS DATOS DEL FICHERO A UN ARRAY LIST
+        List<String> list = listaFichero();
+               
+        //lIMPIAR LA JTABLE
+        cargarGrid();
         
-        //FOREACH: ITERAR EN LOS CAMPOS DEL ARRAY LIST 
-        for (clsOperaciones item : objoperaciones.datosOperaciones) {
-            modelo.insertRow(fila, new Object[]{}); //INSERTA LA FILA EN TIEMPO DE EJECUCION
-            
-            //INSERTA LOS DATOS A LA TABLA
-            modelo.setValueAt(item.id, fila, 0);
-            modelo.setValueAt(item.a, fila, 1);
-            modelo.setValueAt(item.b, fila, 2);
-            modelo.setValueAt(item.operacion, fila, 3);
-            modelo.setValueAt(item.resultado, fila, 4);
-            fila++;
+        //MOSTRAR EN LA JTABLE
+        for (int i = 0; i < list.size(); i+=5) {
+            Object[] filas = {list.get(i),list.get(i+1),list.get(i+2),list.get(i+3),list.get(i+4)};
+            DefaultTableModel model = (DefaultTableModel) grid.getModel();
+            model.addRow(filas);  
         }
-    }*/
-    
-    void cargarGrid(){
-        String data[][]={};
-        String columnas[] = {"ID","Valor de A","Valor de B","Operacion","Resultado"};
-        modelo = new DefaultTableModel(data,columnas);
-        grid.setModel(modelo);
     }
+    
+      
+    
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -571,19 +497,4 @@ public class frmOperacionesAritmeticas extends javax.swing.JFrame {
     private javax.swing.JTextField txtb;
     private javax.swing.JTextField txtcodigo;
     // End of variables declaration//GEN-END:variables
-
-    private void refrescarGrid() {
-        //AGREGANDO LOS DATOS DEL FICHERO A UN ARRAY LIST
-        List<String> list = listaFichero();
-               
-        //lIMPIAR LA JTABLE
-        cargarGrid();
-        
-        //MOSTRAR EN LA JTABLE
-        for (int i = 0; i < list.size(); i+=5) {
-            Object[] filas = {list.get(i),list.get(i+1),list.get(i+2),list.get(i+3),list.get(i+4)};
-            DefaultTableModel model = (DefaultTableModel) grid.getModel();
-            model.addRow(filas);  
-        }
-    }
 }
