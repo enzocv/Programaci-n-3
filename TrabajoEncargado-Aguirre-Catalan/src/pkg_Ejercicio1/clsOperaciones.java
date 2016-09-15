@@ -104,37 +104,37 @@ public class clsOperaciones {
     public void eliminarDatos(String idBorrar){
         try {
             // SE CREA UNA NUEVA FILA TEMPORAL DONDE SE ALMACENARÁN LAS LÍNEAS QUE NO SE ELIMINAN
-            File tempFile = new File("operaciones-temp.txt");
+            File archivoTemporal = new File("operaciones-temp.txt");
             
             // SE DECLARAN EL READER Y EL WRITER
-            BufferedReader reader = null;
-            BufferedWriter writer = null;
+            BufferedReader lector=  null;
+            BufferedWriter escritor=  null;
             
             // SE INSTANCIAN EL READER Y EL WRITER
-            reader = new BufferedReader(new FileReader(ficheroOperaciones));
-            writer = new BufferedWriter(new FileWriter(tempFile));
+            lector = new BufferedReader(new FileReader(ficheroOperaciones));
+            escritor = new BufferedWriter(new FileWriter(archivoTemporal));
             
             // SE ASIGNA LA LÍNEA A BORRAR SEGÚN EL ID INDICADO
             String lineaaBorrar = idBorrar +"\t";
-            String currentLine;
+            String lineaActual;
             
-            while((currentLine = reader.readLine()) != null) {
-                String lineaCortada = currentLine.trim();
+            while((lineaActual = lector.readLine()) != null) {
+                String lineaCortada = lineaActual.trim();
                 // SI LA LÍNEA EMPIEZA CON EL ID ESPECIFICADO, ENTONCES NO SE ELIMINA
                 if(lineaCortada.startsWith(lineaaBorrar)) continue;
-                writer.write(currentLine + System.getProperty("line.separator"));
+                escritor.write(lineaActual + System.getProperty("line.separator"));
                 
             }
             
             // SE CIERRAN EL WRITER Y EL READER
-            writer.close();
-            reader.close();
+            escritor.close();
+            lector.close();
             
             // EL ARCHIVO ORIGINAL SE ELIMINA
             ficheroOperaciones.delete();
             
             // EL ARCHIVO TEMPORAL SE RENOMBRA COMO EL ORIGINAL
-            boolean successful = tempFile.renameTo(ficheroOperaciones);
+            boolean successful = archivoTemporal.renameTo(ficheroOperaciones);
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(frmOperacionesAritmeticas.class.getName()).log(Level.SEVERE, null, ex);
